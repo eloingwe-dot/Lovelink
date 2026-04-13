@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoveLink — Rencontres d'Exception</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a96e;
+    --gold-light: #e8d5b0;
+    --gold-dark: #9b7a45;
+    --deep: #0d0a0f;
+    --surface: #13101a;
+    --surface2: #1c1726;
+    --text: #f5f0eb;
+    --muted: #a09080;
+    --rose: #e8a0a0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(201,169,110,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(232,160,160,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(201,169,110,0.12);
+    background: rgba(13,10,15,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .logo span { font-style: italic; color: var(--gold-light); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 28px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--deep); }
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; }
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+  }
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 300;
+    line-height: 1.0;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); display: block; }
+  .hero-sub {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    max-width: 440px;
+    line-height: 2;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+    position: relative;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--deep);
+    border: none;
+    padding: 18px 48px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(201,169,110,0.3);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 18px 48px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  .deco-line {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 60px auto 0;
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+  }
+  .profiles-strip {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 80px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+    flex-wrap: wrap;
+  }
+  .profile-card {
+    width: 140px;
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.15);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+  .profile-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(201,169,110,0.15);
+  }
+  .profile-avatar {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--deep);
+    font-weight: 600;
+  }
+  .profile-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--text); margin-bottom: 4px; }
+  .profile-age { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .profile-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; display: inline-block; margin-right: 4px; }
+  #features { padding: 120px 60px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; text-align: center; }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 80px;
+    line-height: 1.2;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .feature {
+    background: var(--surface);
+    padding: 48px 40px;
+    border: 1px solid rgba(201,169,110,0.08);
+    transition: all 0.4s;
+  }
+  .feature:hover { background: var(--surface2); border-color: rgba(201,169,110,0.3); }
+  .feature-icon { font-size: 32px; margin-bottom: 24px; }
+  .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin-bottom: 14px; color: var(--gold-light); }
+  .feature-desc { font-size: 12px; line-height: 2; color: var(--muted); }
+  #register {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px 80px;
+  }
+  .register-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    max-width: 900px;
+    width: 100%;
+    border: 1px solid rgba(201,169,110,0.2);
+  }
+  .register-left {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    padding: 60px 48px;
+    border-right: 1px solid rgba(201,169,110,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .register-left h2 { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; line-height: 1.2; margin-bottom: 20px; }
+  .register-left h2 em { font-style: italic; color: var(--gold); display: block; }
+  .register-left p { font-size: 12px; line-height: 2; color: var(--muted); margin-bottom: 40px; }
+  .perks { list-style: none; }
+  .perks li {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .perks li::before { content: '✦'; color: var(--gold); font-size: 10px; flex-shrink: 0; }
+  .register-right { background: var(--deep); padding: 60px 48px; }
+  .form-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 8px; }
+  .form-sub { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 40px; }
+  .form-group { margin-bottom: 24px; }
+  .form-group label { display: block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.2);
+    color: var(--text);
+    padding: 14px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.3s;
+    appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+  .form-group input::placeholder { color: var(--muted); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .payment-box {
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 20px;
+    margin: 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .payment-label { font-size: 11px; letter-spacing: 1px; color: var(--muted); }
+  .payment-price { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); }
+  .payment-price span { font-size: 13px; font-family: 'Montserrat', sans-serif; font-weight: 300; }
+  .payment-note { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 4px; }
+  .submit-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--deep);
+    border: none;
+    padding: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    margin-top: 8px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .submit-btn:hover { background: var(--gold-light); box-shadow: 0 8px 30px rgba(201,169,110,0.4); }
+  .terms { font-size: 10px; color: var(--muted); text-align: center; margin-top: 16px; line-height: 1.8; }
+  .terms a { color: var(--gold); text-decoration: none; }
+  #login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 40px;
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.2);
+    padding: 64px 56px;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+  }
+  .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--gold); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
+  .login-logo span { font-style: italic; }
+  .login-tagline { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 48px; }
+  #dashboard { min-height: 100vh; padding: 100px 40px 60px; max-width: 1200px; margin: 0 auto; }
+  .dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+  }
+  .dash-welcome { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; }
+  .dash-welcome em { font-style: italic; color: var(--gold); }
+  .dash-date { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+  .dash-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
+  .dash-sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .user-profile-card {
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.15);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .user-avatar-big {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    color: var(--deep);
+    font-weight: 600;
+    border: 2px solid var(--gold);
+  }
+  .user-name-big { font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 4px; }
+  .user-status { font-size: 10px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
+  .member-badge {
+    background: rgba(201,169,110,0.1);
+    border: 1px solid rgba(201,169,110,0.3);
+    padding: 8px 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: inline-block;
+  }
+  .dash-stats { background: var(--surface); border: 1px solid rgba(201,169,110,0.15); padding: 24px; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(201,169,110,0.08); }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--gold); }
+  .matches-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 24px; }
+  .matches-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .match-card {
+    background: var(--surface);
+    border: 1px solid rgba(201,169,110,0.12);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(201,169,110,0.12); }
+  .match-avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: var(--deep);
+    font-weight: 600;
+  }
+  .match-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; margin-bottom: 4px; }
+  .match-info { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+  .match-actions { display: flex; gap: 8px; justify-content: center; }
+  .match-btn {
+    padding: 8px 16px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .match-btn.like { border-color: var(--gold); color: var(--gold); background: transparent; }
+  .match-btn.like:hover { background: var(--gold); color: var(--deep); }
+  .match-btn.msg { border-color: rgba(255,255,255,0.15); color: var(--muted); background: transparent; }
+  .match-btn.msg:hover { border-color: var(--text); color: var(--text); }
+  .messages-section { background: var(--surface); border: 1px solid rgba(201,169,110,0.15); }
+  .msg-header { padding: 20px 28px; border-bottom: 1px solid rgba(201,169,110,0.15); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
+  .msg-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 28px;
+    border-bottom: 1px solid rgba(201,169,110,0.06);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .msg-item:hover { background: var(--surface2); }
+  .msg-av {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--deep);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-from { font-size: 13px; margin-bottom: 3px; }
+  .msg-preview { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-time { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: var(--surface2);
+    border: 1px solid var(--gold);
+    padding: 16px 28px;
+    font-size: 12px;
+    color: var(--text);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.4s;
+    letter-spacing: 1px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .gold-divider { width: 60px; height: 1px; background: var(--gold); margin: 0 auto 40px; }
+  footer { text-align: center; padding: 48px; border-top: 1px solid rgba(201,169,110,0.1); font-size: 11px; color: var(--muted); letter-spacing: 2px; position: relative; z-index: 1; }
+  footer span { color: var(--gold); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  /* Mobile touch fix */
+  button, .btn-primary, .btn-secondary, .nav-cta, .submit-btn, .match-btn, .logo, .nav-links a, .profile-card, .match-card, .msg-item {
+    -webkit-tap-highlight-color: rgba(201,169,110,0.2);
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .features-grid { grid-template-columns: 1fr; }
+    .register-container { grid-template-columns: 1fr; }
+    .register-left { display: none; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .matches-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('hero-page')" style="display:flex;align-items:center;gap:10px">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 28s-12-7.5-12-15a7 7 0 0 1 12-4.9A7 7 0 0 1 28 13c0 7.5-12 15-12 15z" fill="#c9a96e" opacity="0.9"/>
+      <path d="M16 24s-8-5-8-10a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 5-8 10-8 10z" fill="#e8d5b0" opacity="0.5"/>
+    </svg>
+    Love<span>Link</span>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('hero-page')">Accueil</a></li>
+    <li><a onclick="showPage('hero-page');setTimeout(()=>document.getElementById('features').scrollIntoView({behavior:'smooth'}),100)">Fonctionnalités</a></li>
+    <li><a onclick="showPage('login-page')">Connexion</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('register-page')">Rejoindre <span>→</span></button>
+</nav>
+
+<!-- HERO -->
+<div id="hero-page" class="page active">
+  <section id="hero" style="position:relative;">
+  <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1600&fit=crop') center/cover no-repeat;opacity:0.07;z-index:0;pointer-events:none"></div>
+    <p class="hero-eyebrow">✦ Rencontres d'Exception ✦</p>
+    <h1 class="hero-title">L'amour mérite<br><em>le meilleur.</em></h1>
+    <p class="hero-sub">LoveLink réunit des personnes authentiques en quête de connexions profondes et durables.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showPage('register-page')">Commencer maintenant <span>→</span></button>
+      <button class="btn-secondary" onclick="showPage('login-page')">Se connecter <span>→</span></button>
+    </div>
+    <div class="deco-line"></div>
+    <div class="profiles-strip">
+      <div class="profile-card">
+        <div class="profile-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=120&h=120&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+        <div class="profile-name">Sophia</div>
+        <div class="profile-age"><span class="profile-dot"></span>28 ans</div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+        <div class="profile-name">Mathieu</div>
+        <div class="profile-age"><span class="profile-dot"></span>32 ans</div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+        <div class="profile-name">Camille</div>
+        <div class="profile-age"><span class="profile-dot"></span>26 ans</div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+        <div class="profile-name">Lucas</div>
+        <div class="profile-age"><span class="profile-dot"></span>35 ans</div>
+      </div>
+    </div>
+  </section>
+  <section id="features">
+    <p class="section-label">✦ Ce que nous offrons ✦</p>
+    <h2 class="section-title">Conçu pour des<br><em>rencontres sincères</em></h2>
+    <div class="gold-divider"></div>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">👤</div>
+        <div class="feature-title">Profil complet & photos</div>
+        <div class="feature-desc">Créez un profil authentique avec vos plus belles photos. Montrez qui vous êtes vraiment et attirez les personnes qui vous correspondent.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Messagerie privée</div>
+        <div class="feature-desc">Échangez en toute intimité avec des conversations privées et sécurisées. Votre vie privée est notre priorité absolue.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">✦</div>
+        <div class="feature-title">Membres vérifiés</div>
+        <div class="feature-desc">Chaque profil est vérifié. Vous interagissez uniquement avec des personnes authentiques et sérieuses dans leur démarche.</div>
+      </div>
+    </div>
+  </section>
+  <footer>&copy; 2026 <span>LoveLink</span> &nbsp;·&nbsp; Tous droits réservés &nbsp;·&nbsp; Rencontres d'Exception</footer>
+</div>
+
+<!-- REGISTER -->
+<div id="register-page" class="page">
+  <section id="register">
+    <div class="register-container">
+      <div class="register-left">
+        <h2>Votre histoire<br><em>commence ici.</em></h2>
+        <p>Rejoignez une communauté de personnes authentiques et sérieuses. L'accès premium vous ouvre toutes les portes.</p>
+        <ul class="perks">
+          <li>Profil visible par tous les membres</li>
+          <li>Messagerie privée illimitée</li>
+          <li>Photos haute qualité</li>
+          <li>Membres 100% vérifiés</li>
+          <li>Support prioritaire</li>
+        </ul>
+      </div>
+      <div class="register-right">
+        <h3 class="form-title">Créer un compte</h3>
+        <p class="form-sub">Inscription rapide — 2 minutes</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" placeholder="Votre prénom" id="reg-prenom">
+          </div>
+          <div class="form-group">
+            <label>Âge</label>
+            <input type="number" placeholder="Votre âge" id="reg-age" min="18" max="99">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Adresse e-mail</label>
+          <input type="email" placeholder="votre@email.com" id="reg-email">
+        </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" placeholder="••••••••" id="reg-pwd">
+        </div>
+        <div class="form-group">
+          <label>Je suis</label>
+          <select id="reg-genre" style="color:#a09080">
+            <option value="">Sélectionner…</option>
+            <option>Un homme</option>
+            <option>Une femme</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <!-- Choix opérateur -->
+        <div style="margin-bottom:20px">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Choisissez votre opérateur</div>
+          <div style="display:flex;gap:10px">
+            <div id="op-mtn" onclick="selectOp('mtn')" style="flex:1;padding:14px;border:1px solid #ffcc00;background:rgba(255,204,0,0.08);cursor:pointer;text-align:center;transition:all 0.3s">
+              <div style="font-size:20px">🟡</div>
+              <div style="font-size:11px;letter-spacing:1px;color:#ffcc00;margin-top:6px">MTN MoMo</div>
+            </div>
+            <div id="op-om" onclick="selectOp('om')" style="flex:1;padding:14px;border:1px solid rgba(201,169,110,0.2);background:transparent;cursor:pointer;text-align:center;transition:all 0.3s">
+              <div style="font-size:20px">🟠</div>
+              <div style="font-size:11px;letter-spacing:1px;color:var(--muted);margin-top:6px">Orange Money</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions de paiement manuel -->
+        <div style="background:var(--surface);border:1px solid rgba(201,169,110,0.25);padding:24px;margin-bottom:20px">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px">✦ Instructions de paiement</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div id="op-badge" style="width:44px;height:44px;border-radius:50%;background:#ffcc00;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#000;flex-shrink:0">MTN</div>
+            <div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="op-note">Envoyez <strong style="color:var(--gold)">25 000 XAF</strong> via MTN Mobile Money au :</div>
+              <div style="font-size:22px;font-family:'Cormorant Garamond',serif;color:var(--gold);letter-spacing:2px" id="op-number">640 110 217</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:2px">Nom : LoveLink</div>
+            </div>
+          </div>
+          <div style="background:rgba(201,169,110,0.06);border-left:2px solid var(--gold);padding:12px 16px;font-size:11px;color:var(--muted);line-height:1.9">
+            1. Faites le transfert depuis votre téléphone<br>
+            2. Prenez une <strong style="color:var(--text)">capture d'écran</strong> de la confirmation<br>
+            3. Uploadez-la ci-dessous pour valider votre inscription
+          </div>
+        </div>
+
+        <!-- Upload capture d'écran -->
+        <div class="form-group">
+          <label>Capture d'écran du paiement</label>
+          <div id="upload-zone" onclick="document.getElementById('proof-file').click()" style="border:1px dashed rgba(201,169,110,0.4);padding:28px;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--surface)">
+            <div style="font-size:28px;margin-bottom:8px">📎</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px">Cliquez pour uploader votre capture</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px">JPG, PNG — Max 5MB</div>
+            <div id="file-name" style="font-size:11px;color:var(--gold);margin-top:10px;display:none"></div>
+          </div>
+          <input type="file" id="proof-file" accept="image/*" style="display:none" onchange="handleFileSelect(this)">
+        </div>
+
+        <button class="submit-btn" id="pay-btn" onclick="handleRegister()" style="background:linear-gradient(135deg,#ccaa00,#ffcc00);color:#000">
+          <span id="pay-btn-text">Soumettre mon inscription</span>
+        </button>
+        <p class="terms">En vous inscrivant vous acceptez nos <a href="#">conditions d'utilisation</a><br>et notre <a href="#">politique de confidentialité</a>.</p>
+        <p style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted)">Déjà membre ? <a href="#" style="color:var(--gold);text-decoration:none" onclick="showPage('login-page')">Se connecter</a></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- LOGIN -->
+<div id="login-page" class="page">
+  <section id="login">
+    <div class="login-box">
+      <div class="login-logo">Love<span>Link</span></div>
+      <div class="login-tagline">Rencontres d'Exception</div>
+      <div class="form-group">
+        <label>Adresse e-mail</label>
+        <input type="email" placeholder="votre@email.com" id="login-email">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" placeholder="••••••••" id="login-pwd">
+      </div>
+      <button class="submit-btn" onclick="handleLogin()">Se connecter <span>→</span></button>
+      <p style="text-align:center;margin-top:24px;font-size:11px;color:var(--muted)"><a href="#" style="color:var(--gold);text-decoration:none">Mot de passe oublié ?</a></p>
+      <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted)">Pas encore membre ? <a href="#" style="color:var(--gold);text-decoration:none" onclick="showPage('register-page')">S'inscrire</a></p>
+    </div>
+  </section>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-page" class="page">
+  <section id="dashboard">
+    <div class="dash-header">
+      <div>
+        <div class="dash-welcome">Bonjour, <em id="dash-name">Sophie</em></div>
+        <div class="dash-date" style="margin-top:8px">Dimanche 12 Avril 2026</div>
+      </div>
+      <button class="btn-secondary" onclick="showPage('hero-page')" style="font-size:10px;padding:10px 24px">Déconnexion</button>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-sidebar">
+        <div class="user-profile-card">
+          <div class="user-avatar-big" id="dash-avatar">S</div>
+          <div class="user-name-big" id="dash-name2">Sophie</div>
+          <div class="user-status">En ligne</div>
+          <div class="member-badge">✦ Membre Premium</div>
+        </div>
+        <div class="dash-stats">
+          <div class="stat-row"><span class="stat-label">Profils vus</span><span class="stat-val">24</span></div>
+          <div class="stat-row"><span class="stat-label">Likes reçus</span><span class="stat-val">8</span></div>
+          <div class="stat-row"><span class="stat-label">Messages</span><span class="stat-val">3</span></div>
+          <div class="stat-row"><span class="stat-label">Matchs</span><span class="stat-val">5</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="matches-title">Profils suggérés pour vous</div>
+        <div class="matches-grid">
+          <div class="match-card">
+            <div class="match-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=140&h=140&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="match-name">Lucas</div>
+            <div class="match-info">35 ans · Paris</div>
+            <div class="match-actions">
+              <button class="match-btn like" onclick="showToast('💛 Vous avez liké Lucas !')">♡ Like</button>
+              <button class="match-btn msg" onclick="showToast('💬 Message envoyé à Lucas !')">Msg</button>
+            </div>
+          </div>
+          <div class="match-card">
+            <div class="match-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=140&h=140&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="match-name">Antoine</div>
+            <div class="match-info">29 ans · Lyon</div>
+            <div class="match-actions">
+              <button class="match-btn like" onclick="showToast('💛 Vous avez liké Antoine !')">♡ Like</button>
+              <button class="match-btn msg" onclick="showToast('💬 Message envoyé à Antoine !')">Msg</button>
+            </div>
+          </div>
+          <div class="match-card">
+            <div class="match-avatar" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=140&h=140&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="match-name">Nicolas</div>
+            <div class="match-info">31 ans · Bordeaux</div>
+            <div class="match-actions">
+              <button class="match-btn like" onclick="showToast('💛 Vous avez liké Nicolas !')">♡ Like</button>
+              <button class="match-btn msg" onclick="showToast('💬 Message envoyé à Nicolas !')">Msg</button>
+            </div>
+          </div>
+        </div>
+        <div class="messages-section">
+          <div class="msg-header">Messages récents</div>
+          <div class="msg-item" onclick="showToast('📨 Ouverture de la conversation...')">
+            <div class="msg-av" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=88&h=88&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="msg-body">
+              <div class="msg-from">Lucas</div>
+              <div class="msg-preview">Bonjour, j'ai beaucoup aimé votre profil…</div>
+            </div>
+            <div class="msg-time">14h32</div>
+          </div>
+          <div class="msg-item" onclick="showToast('📨 Ouverture de la conversation...')">
+            <div class="msg-av" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=88&h=88&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="msg-body">
+              <div class="msg-from">Antoine</div>
+              <div class="msg-preview">Vous aimez aussi voyager ? Je rentre de Tokyo…</div>
+            </div>
+            <div class="msg-time">11h15</div>
+          </div>
+          <div class="msg-item" onclick="showToast('📨 Ouverture de la conversation...')">
+            <div class="msg-av" style="background:none;overflow:hidden;padding:0"><img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=88&h=88&fit=crop&crop=face" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+            <div class="msg-body">
+              <div class="msg-from">Thomas</div>
+              <div class="msg-preview">Super profil ! On se retrouve pour un café ?</div>
+            </div>
+            <div class="msg-time">Hier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+  let selectedOp = 'mtn';
+
+  function selectOp(op) {
+    selectedOp = op;
+    const mtnBtn = document.getElementById('op-mtn');
+    const omBtn = document.getElementById('op-om');
+    const badge = document.getElementById('op-badge');
+    const note = document.getElementById('op-note');
+    const payBtn = document.getElementById('pay-btn');
+    if (op === 'mtn') {
+      mtnBtn.style.border = '1px solid #ffcc00';
+      mtnBtn.style.background = 'rgba(255,204,0,0.08)';
+      omBtn.style.border = '1px solid rgba(201,169,110,0.2)';
+      omBtn.style.background = 'transparent';
+      document.querySelector('#op-mtn div:last-child').style.color = '#ffcc00';
+      document.querySelector('#op-om div:last-child').style.color = 'var(--muted)';
+      badge.style.background = '#ffcc00';
+      badge.style.color = '#000';
+      badge.textContent = 'MTN';
+      note.innerHTML = 'Envoyez <strong style="color:var(--gold)">25 000 XAF</strong> via MTN Mobile Money au :';
+      document.getElementById('op-number').textContent = '640 110 217';
+      payBtn.style.background = 'linear-gradient(135deg,#ccaa00,#ffcc00)';
+      payBtn.style.color = '#000';
+    } else {
+      omBtn.style.border = '1px solid #ff6600';
+      omBtn.style.background = 'rgba(255,102,0,0.08)';
+      mtnBtn.style.border = '1px solid rgba(201,169,110,0.2)';
+      mtnBtn.style.background = 'transparent';
+      document.querySelector('#op-om div:last-child').style.color = '#ff6600';
+      document.querySelector('#op-mtn div:last-child').style.color = 'var(--muted)';
+      badge.style.background = '#ff6600';
+      badge.style.color = '#fff';
+      badge.textContent = 'OM';
+      note.innerHTML = 'Envoyez <strong style="color:var(--gold)">25 000 XAF</strong> via Orange Money au :';
+      document.getElementById('op-number').textContent = '640 110 217';
+      payBtn.style.background = 'linear-gradient(135deg,#cc5200,#ff6600)';
+      payBtn.style.color = '#fff';
+    }
+  }
+
+  function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+      const name = input.files[0].name;
+      document.getElementById('file-name').textContent = '✓ ' + name;
+      document.getElementById('file-name').style.display = 'block';
+      document.getElementById('upload-zone').style.borderColor = 'var(--gold)';
+      document.getElementById('upload-zone').style.background = 'rgba(201,169,110,0.05)';
+    }
+  }
+
+  function handleRegister() {
+    const prenom = document.getElementById('reg-prenom').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pwd = document.getElementById('reg-pwd').value;
+    const age = document.getElementById('reg-age').value;
+    const genre = document.getElementById('reg-genre').value;
+    const proof = document.getElementById('proof-file').files[0];
+    if (!prenom || !email || !pwd || !age || !genre) { showToast('⚠️ Veuillez remplir tous les champs.'); return; }
+    if (parseInt(age) < 18) { showToast('⚠️ Vous devez avoir 18 ans ou plus.'); return; }
+    if (!proof) { showToast('⚠️ Veuillez uploader la capture d'écran du paiement.'); return; }
+    const btn = document.getElementById('pay-btn');
+    document.getElementById('pay-btn-text').textContent = '⏳ Vérification en cours…';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    setTimeout(() => {
+      document.getElementById('dash-name').textContent = prenom;
+      document.getElementById('dash-name2').textContent = prenom;
+      document.getElementById('dash-avatar').textContent = prenom[0].toUpperCase();
+      showToast('✅ Inscription soumise ! Votre compte sera activé après vérification du paiement.');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      document.getElementById('pay-btn-text').textContent = 'Soumettre mon inscription';
+      setTimeout(() => showPage('dashboard-page'), 2000);
+    }, 1800);
+  }
+  function handleLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pwd = document.getElementById('login-pwd').value;
+    if (!email || !pwd) { showToast('⚠️ Veuillez remplir tous les champs.'); return; }
+    showToast('✦ Connexion réussie ! Bienvenue.');
+    setTimeout(() => showPage('dashboard-page'), 1000);
+  }
+</script>
+</body>
+</html>
